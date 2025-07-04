@@ -345,3 +345,66 @@ EOF
     echo -e "${GREEN}✅ FRP installation complete.${RESET}"
     pause
 }
+
+
+# Uninstall Components
+uninstall_components() {
+    clear
+    echo -e "${BLUE}========== Uninstall Tunnel Components ==========${RESET}"
+    echo -e " ${BLUE}1)${RESET} Uninstall ${YELLOW}Backhaul${RESET}"
+    echo -e " ${BLUE}2)${RESET} Uninstall ${YELLOW}Chisel${RESET}"
+    echo -e " ${BLUE}3)${RESET} Uninstall ${YELLOW}FRP${RESET}"
+    echo -e " ${BLUE}4)${RESET} Uninstall ${YELLOW}V2Ray (Sanaei Panel)${RESET}"
+    echo -e " ${BLUE}5)${RESET} Uninstall ${YELLOW}TCP Optimizer${RESET}"
+    echo -e " ${BLUE}0)${RESET} Return to Main Menu"
+    echo
+
+    read -p "Select a component to uninstall: " choice
+    case $choice in
+        1)
+            systemctl stop backhaul 2>/dev/null
+            systemctl disable backhaul 2>/dev/null
+            rm -f /etc/systemd/system/backhaul.service
+            rm -rf /root/backhaul /usr/bin/backhaul
+            echo -e "${GREEN}✔ Backhaul uninstalled.${RESET}"
+            ;;
+        2)
+            systemctl stop chisel 2>/dev/null
+            systemctl disable chisel 2>/dev/null
+            rm -f /etc/systemd/system/chisel.service
+            rm -rf /root/chisel /usr/local/bin/chisel
+            echo -e "${GREEN}✔ Chisel uninstalled.${RESET}"
+            ;;
+        3)
+            systemctl stop frps 2>/dev/null
+            systemctl disable frps 2>/dev/null
+            systemctl stop frpc 2>/dev/null
+            systemctl disable frpc 2>/dev/null
+            rm -f /etc/systemd/system/frps.service /etc/systemd/system/frpc.service
+            rm -rf /root/frp /usr/local/bin/frps /usr/local/bin/frpc
+            echo -e "${GREEN}✔ FRP uninstalled.${RESET}"
+            ;;
+        4)
+            systemctl stop v2ray 2>/dev/null
+            systemctl disable v2ray 2>/dev/null
+            rm -f /etc/systemd/system/v2ray.service
+            rm -rf /usr/local/etc/v2ray /usr/local/bin/v2ray /usr/local/bin/v2ctl /etc/v2ray /var/log/v2ray
+            rm -rf /opt/v2ray-panel
+            echo -e "${GREEN}✔ V2Ray and Sanaei Panel uninstalled.${RESET}"
+            ;;
+        5)
+            sysctl -w net.core.default_qdisc=cake
+            sysctl -w net.ipv4.tcp_congestion_control=cubic
+            echo -e "${GREEN}✔ TCP optimizer reset to default.${RESET}"
+            ;;
+        0)
+            return
+            ;;
+        *)
+            echo -e "${RED}Invalid option.${RESET}"
+            ;;
+    esac
+    systemctl daemon-reexec
+    sleep 2
+    pause
+}
