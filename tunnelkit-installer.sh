@@ -152,7 +152,36 @@ install_v2ray() {
 # Main Menu
 
 
+
 install_backhaul_menu() {
+    while true; do
+        clear
+        echo -e "${BLUE}${BOLD}Select Backhaul Mode${RESET}"
+        echo "1) 🧩 Normal"
+        echo "2) 🌐 Nginx with SSL"
+        echo "3) ⚡ Hysteria 2"
+        echo "4) ❌ Uninstall Backhaul (All Modes)"\necho "0) 🔙 Return to Main Menu"
+        echo -n -e "${YELLOW}Choose mode: ${RESET}"
+        read mode
+        case $mode in
+            1)
+                install_backhaul_normal
+                return ;;
+            2)
+                install_backhaul_nginx
+                return ;;
+            3)
+                install_backhaul_hysteria
+                return ;;
+            0)
+                return ;;
+            *)
+                echo -e "${RED}Invalid option.${RESET}"
+                sleep 1 ;;
+        esac
+    done
+}
+
     while true; do
         clear
         echo -e "${BLUE}${BOLD}Backhaul Installation Menu${RESET}"
@@ -631,5 +660,102 @@ EOF
     systemctl daemon-reload
     systemctl enable --now chisel-client
     echo -e "${GREEN}Chisel client service installed and started.${RESET}"
+    sleep 2
+}
+
+
+install_backhaul_normal() {
+    echo -e "${YELLOW}Installing Backhaul (Normal)...${RESET}"
+    wget -O /usr/bin/backhaul https://github.com/xpersian/Backhaul/releases/download/0.6.6/backhaul
+    chmod +x /usr/bin/backhaul
+    mkdir -p /root/backhaul
+    read -p "Enter Backhaul server port (e.g. 3080): " BPORT
+    read -p "Enter token: " BTOKEN
+    cat <<EOF > /root/backhaul/config.toml
+[server]
+bind_addr = "0.0.0.0:${BPORT}"
+transport = "tcp"
+accept_udp = false
+token = "${BTOKEN}"
+keepalive_period = 75
+nodelay = true
+heartbeat = 40
+channel_size = 2048
+web_port = 2060
+sniffer = false
+log_level = "info"
+ports = ["443=443", "80=80"]
+EOF
+    echo -e "${GREEN}Backhaul (Normal) installed.${RESET}"
+    sleep 2
+}
+
+install_backhaul_nginx() {
+    echo -e "${YELLOW}Setting up Nginx reverse proxy with SSL for Backhaul...${RESET}"
+    apt install nginx certbot python3-certbot-nginx -y
+    read -p "Enter your domain (e.g., tunnel.example.com): " DOMAIN
+    read -p "Enter local port to proxy to (e.g., 3080): " LOCAL_PORT
+    cat > /etc/nginx/sites-available/backhaul <<EOF
+server {
+    listen 80;
+    server_name ${DOMAIN};
+    location / {
+        proxy_pass http://127.0.0.1:${LOCAL_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+}
+EOF
+    ln -s /etc/nginx/sites-available/backhaul /etc/nginx/sites-enabled/backhaul
+    nginx -t && systemctl reload nginx
+    certbot --nginx -d ${DOMAIN}
+    echo -e "${GREEN}Nginx + SSL configuration completed.${RESET}"
+    sleep 2
+}
+
+install_backhaul_hysteria() {
+    echo -e "${YELLOW}Installing Hysteria 2 and configuring...${RESET}"
+    bash <(curl -fsSL https://get.hy2.sh/)
+    mkdir -p /etc/hysteria
+    read -p "Enter password for Hysteria2: " HYPASS
+    cat > /etc/hysteria/config.yaml <<EOF
+listen: :443
+auth:
+  type: password
+  password: ${HYPASS}
+tls:
+  cert: /etc/hysteria/cert.pem
+  key: /etc/hysteria/key.pem
+masquerade:
+  type: proxy
+  proxy:
+    url: https://www.wikipedia.org
+    rewriteHost: true
+EOF
+    read -p "Paste path to SSL cert PEM: " cert
+    read -p "Paste path to SSL key PEM: " key
+    cp "$cert" /etc/hysteria/cert.pem
+    cp "$key" /etc/hysteria/key.pem
+    systemctl restart hysteria-server
+    echo -e "${GREEN}Hysteria 2 installed and running.${RESET}"
+    sleep 2
+}
+
+
+uninstall_backhaul_all() {
+    echo -e "${YELLOW}Uninstalling all Backhaul modes...${RESET}"
+    systemctl stop backhaul 2>/dev/null
+    systemctl disable backhaul 2>/dev/null
+    systemctl stop chisel-client 2>/dev/null
+    systemctl disable chisel-client 2>/dev/null
+    systemctl stop hysteria-server 2>/dev/null
+    systemctl disable hysteria-server 2>/dev/null
+    rm -f /usr/bin/backhaul /usr/local/bin/chisel
+    rm -rf /root/backhaul /etc/hysteria /etc/systemd/system/chisel-client.service
+    rm -f /etc/nginx/sites-available/backhaul /etc/nginx/sites-enabled/backhaul
+    nginx -t && systemctl reload nginx
+    echo -e "${GREEN}Backhaul (all modes) uninstalled.${RESET}"
     sleep 2
 }
