@@ -153,34 +153,31 @@ install_v2ray() {
 
 
 
+
 install_backhaul_menu() {
     while true; do
         clear
-        echo -e "${BLUE}${BOLD}Select Backhaul Mode${RESET}"
+        echo -e "${BLUE}Select Backhaul Mode${RESET}"
+        echo -e "${BLUE}-----------------------${RESET}"
         echo "1) 🧩 Normal"
         echo "2) 🌐 Nginx with SSL"
         echo "3) ⚡ Hysteria 2"
-        echo "4) ❌ Uninstall Backhaul (All Modes)"\necho "0) 🔙 Return to Main Menu"
+        echo "4) ❌ Uninstall Backhaul"
+        echo "0) 🔙 Return to Main Menu"
         echo -n -e "${YELLOW}Choose mode: ${RESET}"
         read mode
         case $mode in
-            1)
-                install_backhaul_normal
-                return ;;
-            2)
-                install_backhaul_nginx
-                return ;;
-            3)
-                install_backhaul_hysteria
-                return ;;
-            0)
-                return ;;
-            *)
-                echo -e "${RED}Invalid option.${RESET}"
-                sleep 1 ;;
+            1) install_backhaul_normal ;;
+            2) install_backhaul_nginx ;;
+            3) install_backhaul_hysteria ;;
+            4) uninstall_backhaul_all ;;
+                        5) monitor_service backhaul ;;
+            0) return ;;
+            *) echo -e "${RED}Invalid option.${RESET}"; sleep 1 ;;
         esac
     done
 }
+
 
     while true; do
         clear
@@ -353,29 +350,41 @@ EOF
 }
 
 
+
 main_menu() {
     while true; do
         clear
-        echo -e "${BLUE}${BOLD}TunnelKitt Menu${RESET}"
-        echo "1) 🌀 Install Backhaul"
-        echo "2) 🧱 Install Chisel"
-        echo "3) 🔁 Install FRP"
-        echo "4) 🛰  Install V2Ray (Sanaei Panel)"
-        echo "5) ⚙️  Apply TCP Optimization"
-        echo "0) ❌ Exit"
+        echo -e "${BLUE}============== TunnelKit Unified Installer ==============${RESET}"
+        echo
+        echo -e "  ${BLUE}1)${RESET} Install Backhaul Tunnel"
+        echo -e "  ${BLUE}2)${RESET} Install Chisel Tunnel"
+        echo -e "  ${BLUE}3)${RESET} Install FRP Tunnel"
+        echo -e "  ${BLUE}4)${RESET} Install Sanaei Panel"
+        echo -e "  ${BLUE}5)${RESET} Apply TCP Optimizer"
+        echo -e "  ${BLUE}6)${RESET} View Logs"
+        echo -e "  ${BLUE}7)${RESET} Update Script"
+        echo -e "  ${BLUE}8)${RESET} Uninstall Components"
+        echo
+        echo -e "  ${BLUE}0)${RESET} Exit"
+        echo
         echo -n -e "${YELLOW}Choose an option: ${RESET}"
-        read opt
-        case $opt in
-        1) install_backhaul_menu ;;
-        2) install_chisel ;;
-        3) install_frp ;;
-        4) install_v2ray ;;
-        5) tcp_optimizer ;;
-        0) echo -e "${RED}Exiting...${RESET}"; exit 0 ;;
-        *) echo -e "${RED}Invalid option.${RESET}"; pause ;;
+        read choice
+
+        case $choice in
+            1) install_backhaul_menu ;;
+            2) install_chisel_menu ;;
+            3) install_frp ;;
+            4) install_v2ray_sanaei ;;
+            5) apply_tcp_optimization ;;
+            6) view_logs ;;
+            7) update_script ;;
+            8) uninstall_components ;;
+            0) echo -e "${GREEN}Exiting...${RESET}"; exit 0 ;;
+            *) echo -e "${RED}Invalid option!${RESET}"; sleep 1 ;;
         esac
     done
 }
+
 
 # Run the menu
 main_menu
@@ -758,4 +767,158 @@ uninstall_backhaul_all() {
     nginx -t && systemctl reload nginx
     echo -e "${GREEN}Backhaul (all modes) uninstalled.${RESET}"
     sleep 2
+}
+
+
+tunnel_install_menu() {
+    while true; do
+        clear
+        echo -e "${BLUE}${BOLD}Tunnel Installation Menu${RESET}"
+        echo "1) 🌀 Backhaul"
+        echo "2) 🧱 Chisel"
+        echo "3) 🔁 FRP"
+        echo "4) 🛰 V2Ray (Sanaei Panel)"
+        echo "0) 🔙 Back to Main Menu"
+        echo -n -e "${YELLOW}Select a tunnel to install/configure: ${RESET}"
+        read tunnel_choice
+        case $tunnel_choice in
+            1) tunnel_install_menu ;;
+            2) install_chisel_menu ;;
+            3) install_frp ;;
+            4) install_v2ray_sanaei ;;
+            0) return ;;
+            *) echo -e "${RED}Invalid option.${RESET}"; sleep 1 ;;
+        esac
+    done
+}
+
+
+install_chisel_menu() {
+    while true; do
+        clear
+        echo -e "${BLUE}Select Chisel Mode${RESET}"
+        echo -e "${BLUE}----------------------${RESET}"
+        echo "1) 🖥  Install Chisel as Server (Iran)"
+        echo "2) 🌍 Install Chisel as Client (Foreign)"
+        echo "4) 🔒 Install Chisel Client (Nginx HTTPS)"
+        echo "3) 🌐 Install Chisel with Nginx (Reverse Proxy)"
+        echo "3) ❌ Uninstall Chisel"
+        echo "0) 🔙 Return to Main Menu"
+        echo -n -e "${YELLOW}Choose mode: ${RESET}"
+        read chisel_mode
+        case $chisel_mode in
+            4) install_chisel_client_nginx ;;
+            1) install_chisel_server ;;
+            2) install_chisel_client ;;
+            
+            3) install_chisel_nginx ;; uninstall_chisel ;;
+                        6) monitor_service chisel ;;
+            0) return ;;
+            *) echo -e "${RED}Invalid option.${RESET}"; sleep 1 ;;
+        esac
+    done
+}
+
+
+install_chisel_nginx() {
+    echo -e "${YELLOW}Installing Chisel + Nginx reverse proxy...${RESET}"
+    apt update && apt install -y nginx certbot python3-certbot-nginx
+    read -p "Enter your domain name (e.g., tunnel.example.com): " DOMAIN
+    read -p "Enter Chisel backend port (e.g., 3333): " PORT
+
+    # نصب chisel
+    wget -O /usr/local/bin/chisel https://github.com/jpillora/chisel/releases/latest/download/chisel_linux_amd64.gz
+    gunzip -f /usr/local/bin/chisel
+    chmod +x /usr/local/bin/chisel
+
+    # ایجاد systemd
+    cat > /etc/systemd/system/chisel.service <<EOF
+[Unit]
+Description=Chisel Server (Nginx Proxy)
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/chisel server -p ${PORT} --reverse
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    # ایجاد nginx conf
+    cat > /etc/nginx/sites-available/chisel <<EOF
+server {
+    listen 80;
+    server_name ${DOMAIN};
+
+    location / {
+        proxy_pass http://127.0.0.1:${PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+}
+EOF
+
+    ln -sf /etc/nginx/sites-available/chisel /etc/nginx/sites-enabled/chisel
+    nginx -t && systemctl reload nginx
+    certbot --nginx -d ${DOMAIN}
+
+    # فعال‌سازی chisel
+    systemctl daemon-reexec
+    systemctl daemon-reload
+    systemctl enable --now chisel
+
+    echo -e "${GREEN}Chisel is now running behind HTTPS proxy via nginx at https://${DOMAIN}.${RESET}"
+    sleep 2
+}
+
+
+install_chisel_client_nginx() {
+    echo -e "${YELLOW}Installing Chisel Client for Nginx Reverse Proxy...${RESET}"
+    CHISEL_VERSION="1.7.7"
+    wget -O /usr/local/bin/chisel https://github.com/jpillora/chisel/releases/download/${CHISEL_VERSION}/chisel_${CHISEL_VERSION}_linux_amd64.gz
+    gunzip -f /usr/local/bin/chisel
+    chmod +x /usr/local/bin/chisel
+    read -p "Enter domain name of Nginx proxy (e.g., tunnel.example.com): " DOMAIN
+    read -p "Enter remote mapping (e.g., R:2222:localhost:22): " REMOTE
+
+    # تولید فایل client.json
+    mkdir -p /etc/chisel
+    cat > /etc/chisel/client.json <<EOF
+{
+  "server": "https://${DOMAIN}",
+  "mapping": "${REMOTE}"
+}
+EOF
+
+    # systemd service
+    cat > /etc/systemd/system/chisel-client-nginx.service <<EOF
+[Unit]
+Description=Chisel Client (via Nginx HTTPS)
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/chisel client https://${DOMAIN} ${REMOTE}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    systemctl daemon-reexec
+    systemctl daemon-reload
+    systemctl enable --now chisel-client-nginx
+
+    echo -e "${GREEN}Chisel client configured and client.json saved at /etc/chisel/client.json${RESET}"
+    sleep 2
+}
+
+
+monitor_service() {
+    SERVICE_NAME=$1
+    echo -e "${YELLOW}Monitoring service: $SERVICE_NAME${RESET}"
+    echo -e "${BLUE}Press Ctrl+C to exit.${RESET}"
+    journalctl -fu "$SERVICE_NAME"
 }
