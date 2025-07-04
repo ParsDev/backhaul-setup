@@ -356,7 +356,7 @@ EOF
 main_menu() {
     while true; do
         clear
-        echo -e "${BLUE}${BOLD}TunnelKit Menu${RESET}"
+        echo -e "${BLUE}${BOLD}TunnelKitt Menu${RESET}"
         echo "1) 🌀 Install Backhaul"
         echo "2) 🧱 Install Chisel"
         echo "3) 🔁 Install FRP"
