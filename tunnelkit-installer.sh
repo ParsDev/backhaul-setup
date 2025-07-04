@@ -922,3 +922,6 @@ monitor_service() {
     echo -e "${BLUE}Press Ctrl+C to exit.${RESET}"
     journalctl -fu "$SERVICE_NAME"
 }
+
+
+main_menu
