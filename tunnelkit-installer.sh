@@ -150,11 +150,7 @@ install_v2ray() {
 }
 
 # Main Menu
-
-
-
-
-install_backhaul_menu() {
+() {
     while true; do
         clear
         echo -e "${BLUE}Select Backhaul Mode${RESET}"
@@ -387,9 +383,6 @@ main_menu() {
 
 
 # Run the menu
-main_menu
-
-
 # Chisel Installer
 install_chisel() {
     echo -e "${YELLOW}[Installing Chisel Tunnel]${RESET}"
@@ -791,9 +784,7 @@ tunnel_install_menu() {
         esac
     done
 }
-
-
-install_chisel_menu() {
+() {
     while true; do
         clear
         echo -e "${BLUE}Select Chisel Mode${RESET}"
