@@ -150,6 +150,7 @@ install_v2ray() {
 }
 
 # Main Menu
+
 main_menu() {
     while true; do
         clear
@@ -159,20 +160,23 @@ main_menu() {
         echo "3) 🔁 Install FRP"
         echo "4) 🛰  Install V2Ray (Sanaei Panel)"
         echo "5) ⚙️  Apply TCP Optimization"
+        echo "6) 🗑️  Uninstall Components"
         echo "0) ❌ Exit"
         echo -n -e "${YELLOW}Choose an option: ${RESET}"
-        read opt
-        case $opt in
-        1) install_backhaul ;;
-        2) install_chisel ;;
-        3) install_frp ;;
-        4) install_v2ray ;;
-        5) tcp_optimizer ;;
-        0) echo -e "${RED}Exiting...${RESET}"; exit 0 ;;
-        *) echo -e "${RED}Invalid option.${RESET}"; pause ;;
+        read choice
+        case $choice in
+            1) install_backhaul ;;
+            2) install_chisel ;;
+            3) install_frp ;;
+            4) install_v2ray ;;
+            5) apply_tcp_optimization ;;
+            6) uninstall_components ;;
+            0) exit 0 ;;
+            *) echo -e "${RED}Invalid option!${RESET}"; sleep 2 ;;
         esac
     done
 }
+
 
 # Run the menu
 main_menu
