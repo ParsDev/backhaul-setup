@@ -346,42 +346,6 @@ EOF
 }
 
 
-
-main_menu() {
-    while true; do
-        clear
-        echo -e "${BLUE}============== TunnelKit Unified Installer ==============${RESET}"
-        echo
-        echo -e "  ${BLUE}1)${RESET} Install Backhaul Tunnel"
-        echo -e "  ${BLUE}2)${RESET} Install Chisel Tunnel"
-        echo -e "  ${BLUE}3)${RESET} Install FRP Tunnel"
-        echo -e "  ${BLUE}4)${RESET} Install Sanaei Panel"
-        echo -e "  ${BLUE}5)${RESET} Apply TCP Optimizer"
-        echo -e "  ${BLUE}6)${RESET} View Logs"
-        echo -e "  ${BLUE}7)${RESET} Update Script"
-        echo -e "  ${BLUE}8)${RESET} Uninstall Components"
-        echo
-        echo -e "  ${BLUE}0)${RESET} Exit"
-        echo
-        echo -n -e "${YELLOW}Choose an option: ${RESET}"
-        read choice
-
-        case $choice in
-            1) install_backhaul_menu ;;
-            2) install_chisel_menu ;;
-            3) install_frp ;;
-            4) install_v2ray_sanaei ;;
-            5) apply_tcp_optimization ;;
-            6) view_logs ;;
-            7) update_script ;;
-            8) uninstall_components ;;
-            0) echo -e "${GREEN}Exiting...${RESET}"; exit 0 ;;
-            *) echo -e "${RED}Invalid option!${RESET}"; sleep 1 ;;
-        esac
-    done
-}
-
-
 # Run the menu
 # Chisel Installer
 install_chisel() {
@@ -912,6 +876,42 @@ monitor_service() {
     echo -e "${YELLOW}Monitoring service: $SERVICE_NAME${RESET}"
     echo -e "${BLUE}Press Ctrl+C to exit.${RESET}"
     journalctl -fu "$SERVICE_NAME"
+}
+
+main_menu
+
+main_menu() {
+    while true; do
+        clear
+        echo -e "${BLUE}============== TunnelKit Unified Installer ==============${RESET}"
+        echo
+        echo -e "  ${BLUE}1)${RESET} Install Backhaul Tunnel"
+        echo -e "  ${BLUE}2)${RESET} Install Chisel Tunnel"
+        echo -e "  ${BLUE}3)${RESET} Install FRP Tunnel"
+        echo -e "  ${BLUE}4)${RESET} Install Sanaei Panel"
+        echo -e "  ${BLUE}5)${RESET} Apply TCP Optimizer"
+        echo -e "  ${BLUE}6)${RESET} View Logs"
+        echo -e "  ${BLUE}7)${RESET} Update Script"
+        echo -e "  ${BLUE}8)${RESET} Uninstall Components"
+        echo
+        echo -e "  ${BLUE}0)${RESET} Exit"
+        echo
+        echo -n -e "${YELLOW}Choose an option: ${RESET}"
+        read choice
+
+        case $choice in
+            1) install_backhaul_menu ;;
+            2) install_chisel_menu ;;
+            3) install_frp_menu ;;  # To be defined
+            4) install_v2ray_sanaei ;;
+            5) apply_tcp_optimization ;;
+            6) view_logs ;;
+            7) update_script ;;
+            8) uninstall_components ;;
+            0) echo -e "${GREEN}Exiting...${RESET}"; exit 0 ;;
+            *) echo -e "${RED}Invalid option!${RESET}"; sleep 1 ;;
+        esac
+    done
 }
 
 main_menu
