@@ -923,5 +923,4 @@ monitor_service() {
     journalctl -fu "$SERVICE_NAME"
 }
 
-
 main_menu
