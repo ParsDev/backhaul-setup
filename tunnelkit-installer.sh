@@ -150,29 +150,7 @@ install_v2ray() {
 }
 
 # Main Menu
-() {
-    while true; do
-        clear
-        echo -e "${BLUE}Select Backhaul Mode${RESET}"
-        echo -e "${BLUE}-----------------------${RESET}"
-        echo "1) 🧩 Normal"
-        echo "2) 🌐 Nginx with SSL"
-        echo "3) ⚡ Hysteria 2"
-        echo "4) ❌ Uninstall Backhaul"
-        echo "0) 🔙 Return to Main Menu"
-        echo -n -e "${YELLOW}Choose mode: ${RESET}"
-        read mode
-        case $mode in
-            1) install_backhaul_normal ;;
-            2) install_backhaul_nginx ;;
-            3) install_backhaul_hysteria ;;
-            4) uninstall_backhaul_all ;;
-                        5) monitor_service backhaul ;;
-            0) return ;;
-            *) echo -e "${RED}Invalid option.${RESET}"; sleep 1 ;;
-        esac
-    done
-}
+
 
 
     while true; do
@@ -748,31 +726,7 @@ tunnel_install_menu() {
         esac
     done
 }
-() {
-    while true; do
-        clear
-        echo -e "${BLUE}Select Chisel Mode${RESET}"
-        echo -e "${BLUE}----------------------${RESET}"
-        echo "1) 🖥  Install Chisel as Server (Iran)"
-        echo "2) 🌍 Install Chisel as Client (Foreign)"
-        echo "4) 🔒 Install Chisel Client (Nginx HTTPS)"
-        echo "3) 🌐 Install Chisel with Nginx (Reverse Proxy)"
-        echo "3) ❌ Uninstall Chisel"
-        echo "0) 🔙 Return to Main Menu"
-        echo -n -e "${YELLOW}Choose mode: ${RESET}"
-        read chisel_mode
-        case $chisel_mode in
-            4) install_chisel_client_nginx ;;
-            1) install_chisel_server ;;
-            2) install_chisel_client ;;
-            
-            3) install_chisel_nginx ;; uninstall_chisel ;;
-                        6) monitor_service chisel ;;
-            0) return ;;
-            *) echo -e "${RED}Invalid option.${RESET}"; sleep 1 ;;
-        esac
-    done
-}
+
 
 
 install_chisel_nginx() {
