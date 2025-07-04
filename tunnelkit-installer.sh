@@ -347,7 +347,8 @@ EOF
 }
 
 
-# Uninstall Components
+# ================== UNINSTALL COMPONENTS ==================
+
 uninstall_components() {
     clear
     echo -e "${BLUE}========== Uninstall Tunnel Components ==========${RESET}"
