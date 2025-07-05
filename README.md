@@ -14,5 +14,6 @@
 
 برای دانلود و اجرای اسکریپت به‌صورت مستقیم از گیت‌هاب، از دستور زیر استفاده کنید:
 
-`bash
+```bash
 bash <(curl -sSL https://raw.githubusercontent.com/parsdev/backhaul-setup/main/backhaul-setup.sh)
+```
